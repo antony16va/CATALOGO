@@ -14,8 +14,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copia solo el backend (el Dockerfile vive en /backend dentro del repo)
-COPY ./backend/ /var/www/html/
+# Copia el contenido del backend (el contexto de build debe ser la carpeta backend)
+COPY . /var/www/html/
 
 # Instala dependencias y prepara la app
 RUN composer install --no-dev --optimize-autoloader && \
