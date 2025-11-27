@@ -1,0 +1,360 @@
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cache` (
+  `key` varchar(191) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `expiration` int(11) NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cache_locks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cache_locks` (
+  `key` varchar(191) NOT NULL,
+  `owner` varchar(191) NOT NULL,
+  `expiration` int(11) NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_auditoria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_auditoria` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `module` varchar(100) NOT NULL,
+  `action` varchar(100) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `affected_table` varchar(100) DEFAULT NULL,
+  `affected_id` bigint(20) unsigned DEFAULT NULL,
+  `changes` text DEFAULT NULL COMMENT 'JSON formatted data',
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(191) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `catalogo_servicios_auditoria_user_id_foreign` (`user_id`),
+  KEY `catalogo_servicios_auditoria_module_action_index` (`module`,`action`),
+  CONSTRAINT `catalogo_servicios_auditoria_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `catalogo_servicios_usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_campos_plantilla`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_campos_plantilla` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `template_id` bigint(20) unsigned NOT NULL,
+  `field_name` varchar(100) NOT NULL,
+  `label` varchar(150) NOT NULL,
+  `type` enum('texto','textarea','email','numero','fecha','select','checkbox','archivo') NOT NULL,
+  `options` text DEFAULT NULL COMMENT 'JSON formatted data',
+  `help_text` text DEFAULT NULL,
+  `required` tinyint(1) NOT NULL DEFAULT 0,
+  `validation_pattern` varchar(191) DEFAULT NULL,
+  `error_message` varchar(191) DEFAULT NULL,
+  `placeholder` varchar(150) DEFAULT NULL,
+  `order` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `campos_tpl_unique` (`template_id`,`field_name`),
+  CONSTRAINT `catalogo_servicios_campos_plantilla_template_id_foreign` FOREIGN KEY (`template_id`) REFERENCES `catalogo_servicios_plantillas_solicitud` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_categorias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_categorias` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `icon` varchar(20) NOT NULL DEFAULT '?',
+  `color` varchar(60) NOT NULL DEFAULT 'from-blue-500 to-cyan-500',
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_categorias_name_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_plantillas_solicitud`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_plantillas_solicitud` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `service_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `description` text DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `version` smallint(5) unsigned NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_plantillas_solicitud_service_id_name_unique` (`service_id`,`name`),
+  CONSTRAINT `catalogo_servicios_plantillas_solicitud_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `catalogo_servicios_servicios` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_servicios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_servicios` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `slug` varchar(160) NOT NULL,
+  `description` text NOT NULL,
+  `category_id` bigint(20) unsigned NOT NULL,
+  `subcategory_id` bigint(20) unsigned DEFAULT NULL,
+  `sla_id` bigint(20) unsigned DEFAULT NULL,
+  `priority` enum('Baja','Media','Alta','Crítica') NOT NULL DEFAULT 'Media',
+  `status` enum('Borrador','Publicado','Inactivo') NOT NULL DEFAULT 'Borrador',
+  `keywords` text DEFAULT NULL,
+  `metadata` text DEFAULT NULL COMMENT 'JSON formatted data',
+  `published_at` timestamp NULL DEFAULT NULL,
+  `created_by_id` bigint(20) unsigned DEFAULT NULL,
+  `updated_by_id` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_servicios_code_unique` (`code`),
+  UNIQUE KEY `catalogo_servicios_servicios_slug_unique` (`slug`),
+  KEY `catalogo_servicios_servicios_category_id_foreign` (`category_id`),
+  KEY `catalogo_servicios_servicios_subcategory_id_foreign` (`subcategory_id`),
+  KEY `catalogo_servicios_servicios_sla_id_foreign` (`sla_id`),
+  KEY `catalogo_servicios_servicios_created_by_id_foreign` (`created_by_id`),
+  KEY `catalogo_servicios_servicios_updated_by_id_foreign` (`updated_by_id`),
+  KEY `catalogo_servicios_servicios_keywords_index` (`keywords`(768)),
+  CONSTRAINT `catalogo_servicios_servicios_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `catalogo_servicios_categorias` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `catalogo_servicios_servicios_created_by_id_foreign` FOREIGN KEY (`created_by_id`) REFERENCES `catalogo_servicios_usuarios` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `catalogo_servicios_servicios_sla_id_foreign` FOREIGN KEY (`sla_id`) REFERENCES `catalogo_servicios_sla_niveles` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `catalogo_servicios_servicios_subcategory_id_foreign` FOREIGN KEY (`subcategory_id`) REFERENCES `catalogo_servicios_subcategorias` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `catalogo_servicios_servicios_updated_by_id_foreign` FOREIGN KEY (`updated_by_id`) REFERENCES `catalogo_servicios_usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_sla_niveles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_sla_niveles` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `first_response_minutes` int(10) unsigned NOT NULL,
+  `resolution_minutes` int(10) unsigned NOT NULL,
+  `pause_conditions` text DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_sla_niveles_name_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_solicitudes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_solicitudes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `service_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `template_id` bigint(20) unsigned DEFAULT NULL,
+  `code` varchar(30) NOT NULL,
+  `form_payload` text NOT NULL COMMENT 'JSON formatted data',
+  `status` enum('Pendiente','En Proceso','Resuelta','Cancelada') NOT NULL DEFAULT 'Pendiente',
+  `submitted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `redirected_at` timestamp NULL DEFAULT NULL,
+  `sla_snapshot` text DEFAULT NULL COMMENT 'JSON formatted data',
+  `service_snapshot` text DEFAULT NULL COMMENT 'JSON formatted data',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_solicitudes_code_unique` (`code`),
+  KEY `catalogo_servicios_solicitudes_user_id_foreign` (`user_id`),
+  KEY `catalogo_servicios_solicitudes_template_id_foreign` (`template_id`),
+  KEY `catalogo_servicios_solicitudes_service_id_status_index` (`service_id`,`status`),
+  CONSTRAINT `catalogo_servicios_solicitudes_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `catalogo_servicios_servicios` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `catalogo_servicios_solicitudes_template_id_foreign` FOREIGN KEY (`template_id`) REFERENCES `catalogo_servicios_plantillas_solicitud` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `catalogo_servicios_solicitudes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `catalogo_servicios_usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_subcategorias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_subcategorias` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_subcategorias_category_id_name_unique` (`category_id`,`name`),
+  CONSTRAINT `catalogo_servicios_subcategorias_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `catalogo_servicios_categorias` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `catalogo_servicios_usuarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalogo_servicios_usuarios` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(191) NOT NULL,
+  `full_name` varchar(150) NOT NULL,
+  `role` enum('Administrador','Usuario') NOT NULL DEFAULT 'Usuario',
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `last_accessed_at` timestamp NULL DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `catalogo_servicios_usuarios_username_unique` (`username`),
+  UNIQUE KEY `catalogo_servicios_usuarios_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(191) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `job_batches`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `job_batches` (
+  `id` varchar(191) NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext DEFAULT NULL,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(191) NOT NULL,
+  `payload` longtext NOT NULL,
+  `attempts` tinyint(3) unsigned NOT NULL,
+  `reserved_at` int(10) unsigned DEFAULT NULL,
+  `available_at` int(10) unsigned NOT NULL,
+  `created_at` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `jobs_queue_index` (`queue`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `migrations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(191) NOT NULL,
+  `batch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `password_reset_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(191) NOT NULL,
+  `token` varchar(191) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `personal_access_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(191) NOT NULL,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `tokenable_type` varchar(191) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_id_tokenable_type_index` (`tokenable_id`,`tokenable_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sessions` (
+  `id` varchar(191) NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sessions_user_id_index` (`user_id`),
+  KEY `sessions_last_activity_index` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(191) NOT NULL,
+  `email` varchar(191) NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(191) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (1,'0001_01_01_000000_create_users_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (2,'0001_01_01_000001_create_cache_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (3,'0001_01_01_000002_create_jobs_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (4,'2025_11_12_103122_create_catalogo_servicios_usuarios_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (5,'2025_11_12_103132_create_catalogo_servicios_categorias_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (6,'2025_11_12_103144_create_catalogo_servicios_subcategorias_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (7,'2025_11_12_103149_create_catalogo_servicios_sla_niveles_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (8,'2025_11_12_103158_create_catalogo_servicios_servicios_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (9,'2025_11_12_103203_create_catalogo_servicios_plantillas_solicitud_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (10,'2025_11_12_103228_create_catalogo_servicios_campos_plantilla_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (11,'2025_11_12_103233_create_catalogo_servicios_solicitudes_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (12,'2025_11_12_103241_create_catalogo_servicios_auditoria_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (13,'2025_11_12_110649_create_personal_access_tokens_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (14,'2025_11_12_120000_add_visual_fields_to_catalogo_servicios_categorias_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (15,'2025_11_12_130500_add_help_text_to_catalogo_servicios_campos_plantilla_table',1);

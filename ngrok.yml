@@ -1,0 +1,9 @@
+﻿version: "2"
+authtoken: 2uWJCyK7vbuCjubsTsgs34aEX8l_5iGZ7HGVvSsaRdK7Uty9Y  # Opcional: instala con `ngrok config add-authtoken <TOKEN>` (no usar < >)
+tunnels:
+  frontend:
+    proto: http
+    addr: 3000
+  backend:
+    proto: http
+    addr: 8000
