@@ -13,16 +13,19 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Limpiar caches
-echo "🧹 Clearing caches..."
+# Limpiar solo caches de archivos (no de base de datos aún)
+echo "🧹 Clearing file caches..."
 php artisan config:clear
-php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 
 # Ejecutar migraciones
 echo "📊 Running migrations..."
 php artisan migrate --force --no-interaction
+
+# Ahora sí limpiar cache de base de datos (ya que las tablas existen)
+echo "🧹 Clearing database cache..."
+php artisan cache:clear 2>/dev/null || echo "Cache clear skipped (table may not exist yet)"
 
 # Optimizar para producción
 if [ "$APP_ENV" = "production" ]; then
