@@ -39,8 +39,12 @@ echo "✅ Application ready!"
 
 # Configurar Apache para usar el puerto correcto
 export APACHE_PORT=${PORT:-80}
-sed -i "s/\${PORT:-80}/${APACHE_PORT}/g" /etc/apache2/sites-available/000-default.conf
+
+# Actualizar ports.conf para escuchar en el puerto correcto
 sed -i "s/Listen 80/Listen ${APACHE_PORT}/" /etc/apache2/ports.conf
+
+# Actualizar VirtualHost para usar el puerto correcto
+sed -i "s/__PORT__/${APACHE_PORT}/g" /etc/apache2/sites-available/000-default.conf
 
 echo "🌐 Apache will listen on port ${APACHE_PORT}"
 

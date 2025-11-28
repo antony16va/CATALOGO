@@ -34,9 +34,8 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 # Instala dependencias y prepara la app
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Configuración de Apache para escuchar en el puerto dinámico
-RUN echo 'Listen ${PORT:-80}\n\
-<VirtualHost *:${PORT:-80}>\n\
+# Configuración de Apache (el puerto se configurará en runtime)
+RUN echo '<VirtualHost *:__PORT__>\n\
     ServerName _\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
