@@ -34,8 +34,9 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 # Instala dependencias y prepara la app
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Configuración básica de Apache para Laravel
-RUN echo '<VirtualHost *:80>\n\
+# Configuración de Apache para escuchar en el puerto dinámico
+RUN echo 'Listen ${PORT:-80}\n\
+<VirtualHost *:${PORT:-80}>\n\
     ServerName _\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -51,7 +52,7 @@ RUN echo '<VirtualHost *:80>\n\
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 80
+EXPOSE ${PORT:-80}
 
 # Arranca con el script de entrada
 ENTRYPOINT ["docker-entrypoint.sh"]

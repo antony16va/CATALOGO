@@ -37,5 +37,12 @@ fi
 
 echo "✅ Application ready!"
 
+# Configurar Apache para usar el puerto correcto
+export APACHE_PORT=${PORT:-80}
+sed -i "s/\${PORT:-80}/${APACHE_PORT}/g" /etc/apache2/sites-available/000-default.conf
+sed -i "s/Listen 80/Listen ${APACHE_PORT}/" /etc/apache2/ports.conf
+
+echo "🌐 Apache will listen on port ${APACHE_PORT}"
+
 # Ejecutar el comando CMD del Dockerfile
 exec "$@"
