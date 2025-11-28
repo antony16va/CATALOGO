@@ -1,0 +1,9 @@
+backend/
+node_modules/
+.git/
+.env.local
+.env*.local
+*.log
+.DS_Store
+ngrok.exe
+.claude/

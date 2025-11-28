@@ -1,0 +1,64 @@
+services:
+  # Backend Laravel API
+  - type: web
+    name: helix-service-desk-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    region: oregon
+    plan: free
+    branch: master
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_NAME
+        value: Helix Service Desk
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: helix-service-desk-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: helix-service-desk-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: helix-service-desk-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: helix-service-desk-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: helix-service-desk-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FRONTEND_URL
+        sync: false
+
+databases:
+  # PostgreSQL Database (o puedes usar Neon externamente)
+  - name: helix-service-desk-db
+    databaseName: helix_service_desk
+    user: helix_user
+    plan: free
+    region: oregon

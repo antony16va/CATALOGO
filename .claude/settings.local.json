@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(del \"c:\\Users\\Antony\\Desktop\\CATALOGO DE SERVICIOS\\ngrok.yml\")",
+      "Bash(rm:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
