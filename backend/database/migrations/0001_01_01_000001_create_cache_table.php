@@ -7,19 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Disable transactions for this migration
+     */
+    public $withinTransaction = false;
+
+    /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->mediumText('value');
+            $table->string('key', 255)->primary();
+            $table->text('value');
             $table->integer('expiration');
         });
 
         Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->string('owner');
+            $table->string('key', 255)->primary();
+            $table->string('owner', 255);
             $table->integer('expiration');
         });
     }
