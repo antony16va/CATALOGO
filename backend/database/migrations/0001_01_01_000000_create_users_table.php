@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Disable transactions for this migration
+     */
+    public $withinTransaction = false;
+
+    /**
      * Run the migrations.
      */
     public function up(): void
@@ -15,11 +20,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255);
-            $table->string('email', 255)->unique();
+            $table->string('email', 255);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 255);
             $table->rememberToken();
             $table->timestamps();
+        });
+
+        // Agregar unique constraint después
+        Schema::table('users', function (Blueprint $table) {
+            $table->unique('email');
         });
 
         // Crear tabla password_reset_tokens
