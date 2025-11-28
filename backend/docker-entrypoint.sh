@@ -19,9 +19,9 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-# Ejecutar migraciones
+# Ejecutar migraciones (fresh para limpiar todo primero)
 echo "📊 Running migrations..."
-php artisan migrate --force --no-interaction
+php artisan migrate:fresh --force --no-interaction
 
 # Ahora sí limpiar cache de base de datos (ya que las tablas existen)
 echo "🧹 Clearing database cache..."
