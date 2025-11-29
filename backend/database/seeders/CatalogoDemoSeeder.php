@@ -30,7 +30,7 @@ class CatalogoDemoSeeder extends Seeder
                 [
                     'full_name' => 'Administrador General',
                     'username' => 'admin',
-                    'password' => Hash::make('12345Va'),
+                    'password' => Hash::make('123456Va'),
                     'role' => 'Administrador',
                     'active' => true,
                 ],
@@ -41,7 +41,7 @@ class CatalogoDemoSeeder extends Seeder
                 [
                     'full_name' => 'Analista de Servicios',
                     'username' => 'analista',
-                    'password' => Hash::make('12345Va'),
+                    'password' => Hash::make('123456Va'),
                     'role' => 'Administrador',
                     'active' => true,
                 ],
