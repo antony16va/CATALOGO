@@ -26,33 +26,33 @@ class CatalogoDemoSeeder extends Seeder
     {
         DB::transaction(function (): void {
             $admin = User::updateOrCreate(
-                ['email' => 'admin@helix.local'],
+                ['email' => 'avalencia@gmail.com'],
                 [
                     'full_name' => 'Administrador General',
                     'username' => 'admin',
-                    'password' => Hash::make('Secret#123'),
+                    'password' => Hash::make('12345Va'),
                     'role' => 'Administrador',
                     'active' => true,
                 ],
             );
 
             $analyst = User::updateOrCreate(
-                ['email' => 'analista@helix.local'],
+                ['email' => 'antony@gmail.com'],
                 [
                     'full_name' => 'Analista de Servicios',
                     'username' => 'analista',
-                    'password' => Hash::make('Secret#123'),
+                    'password' => Hash::make('12345Va'),
                     'role' => 'Administrador',
                     'active' => true,
                 ],
             );
 
             $employee = User::updateOrCreate(
-                ['email' => 'usuario.demo@helix.local'],
+                ['email' => 'antony16va@gmail.com'],
                 [
                     'full_name' => 'Usuario Demo',
                     'username' => 'usuario.demo',
-                    'password' => Hash::make('Secret#123'),
+                    'password' => Hash::make('12345Va'),
                     'role' => 'Usuario',
                     'active' => true,
                 ],
